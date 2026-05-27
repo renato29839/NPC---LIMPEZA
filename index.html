@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Limpeza Digital</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --verde-agua-claro: #e0f2f1;
+            --verde-agua-medio: #4db6ac;
+            --verde-agua-escuro: #00897b;
+            --verde-agua-accent: #26a69a;
+        }
+        body { background-color: #f0f7f7; }
+        .bg-verde-agua { background-color: var(--verde-agua-medio); }
+        .text-verde-agua { color: var(--verde-agua-escuro); }
+        .border-verde-agua { border-color: var(--verde-agua-medio); }
+        
+        /* Estilo para checkboxes marcados */
+        .card-checked { background-color: var(--verde-agua-claro) !important; border-color: var(--verde-agua-accent) !important; }
+    </style>
+</head>
+<body class="p-4 font-sans text-gray-700">
+
+    <div class="max-w-md mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-teal-100">
+        <div class="bg-verde-agua p-6 text-white text-center">
+            <h1 class="text-2xl font-bold">NEUROPSICOCENTRO</h1>
+            <p class="text-teal-50 opacity-90 text-sm mt-1">Checklist de Manutenção de Ambientes</p>
+        </div>
+
+        <form id="form-limpeza" class="p-6 space-y-5">
+            <!-- 1. Nome do Colaborador -->
+            <div>
+                <label class="block text-sm font-bold text-verde-agua mb-1">Nome do Colaborador</label>
+                <input type="text" id="colaborador" required 
+                    class="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-teal-400 border-gray-300 transition" placeholder="Digite seu nome">
+            </div>
+
+            <!-- 2. Seleção de Unidade (NOVO) -->
+            <div>
+                <label class="block text-sm font-bold text-verde-agua mb-1">Unidade / Filial</label>
+                <select id="unidade-select" required
+                    class="w-full px-4 py-2 border rounded-lg bg-white outline-none focus:ring-2 focus:ring-teal-400 border-gray-300 transition">
+                    <option value="">Selecione a unidade...</option>
+                    <option value="Unidade Matriz">Unidade Matriz</option>
+                    <option value="Unidade Sul">Unidade Sul</option>
+                    <option value="Unidade Life">Unidade Life</option>
+                </select>
+            </div>
+
+            <!-- 3. Seleção de Ambiente (Fica ativo após escolher a unidade) -->
+            <div>
+                <label class="block text-sm font-bold text-verde-agua mb-1">Ambiente Selecionado</label>
+                <select id="local-select" required disabled
+                    class="w-full px-4 py-2 border rounded-lg bg-gray-100 outline-none border-gray-300 transition cursor-not-allowed">
+                    <option value="">Selecione primeiro a unidade...</option>
+                </select>
+            </div>
+
+            <!-- 4. Checklist de tarefas -->
+            <div id="container-tarefas" class="hidden space-y-2">
+                <h3 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Tarefas Necessárias</h3>
+                <div id="lista-tarefas" class="space-y-2"></div>
+            </div>
+
+            <!-- 5. Observações -->
+            <div>
+                <label class="block text-sm font-bold text-verde-agua mb-1">Observações</label>
+                <textarea id="observacoes" rows="2" 
+                    class="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-teal-400 border-gray-300 transition resize-none" placeholder="Algo fora do comum?"></textarea>
+            </div>
+
+            <!-- 6. Botão de Envio -->
+            <button type="submit" id="btn-enviar" disabled
+                class="w-full bg-gray-300 text-white font-bold py-4 rounded-xl shadow-lg transition-all transform active:scale-95">
+                ENVIAR PARA PLANILHA
+            </button>
+        </form>
+    </div>
+
+    <!-- Tela de Carregamento (Loading) -->
+    <div id="loading" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center text-white font-bold">
+        <div class="bg-white text-teal-600 p-6 rounded-lg shadow-xl text-center">
+            <svg class="animate-spin h-8 w-8 mx-auto mb-2" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+            Enviando dados para a planilha...
+        </div>
+    </div>
+
+    <script>
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwhA4LfMMetkoX9wvFhV9-di46re_yw2WDtiaiMrxtLcBMr33hnV-p5kPwl774hlWM-/exec";
+
+        // Definição dos blocos de tarefas padrão
+        const checklistPadraoSala = ["Retirar lixo individual", "Limpar mesas e superfícies", "Varrer o chão", "Passar pano com desinfetante", "Limpar marcas de dedos em vidros/portas"];
+        const checklistPadraoCopa = ["Limpar balcão e mesas", "Lavar pia e organizar louça", "Retirar lixo orgânico e reciclável", "Passar pano no chão com desinfetante", "Verificar limpeza externa do micro-ondas"];
+
+        // Banco de dados central das tarefas mapeadas por ambiente
+        const tarefasPorLocal = {
+            "Banheiro Masculino": ["Higienização do vaso e mictório", "Limpeza da pia e espelho", "Reposição de papel/sabonete", "Troca de lixo", "Lavar o piso"],
+            "Banheiro Feminino": ["Higienização dos vasos sanitários", "Limpeza da pia e espelho", "Reposição de papel/sabonete/produtos", "Troca de lixos", "Lavar o piso"],
+            "Recepção Principal": ["Limpar balcão de atendimento", "Organizar poltronas/revistas", "Limpar vidros/portas de entrada", "Aspirar tapete / Passar pano"],
+            "Recepção Expansão 1": ["Limpeza de superfícies e mesas", "Organizar cadeiras", "Retirar lixo local", "Passar pano no piso"],
+            "Recepção Expansão 2": ["Limpeza de superfícies e mesas", "Organizar cadeiras", "Retirar lixo local", "Passar pano no piso"],
+            "Sala de RH": checklistPadraoSala,
+            "Sala do marketing": checklistPadraoSala,
+            "Sala da ouvidoria": checklistPadraoSala,
+            "Copa 1": checklistPadraoCopa,
+            "Copa 2": checklistPadraoCopa,
+            "Área Comum/Hall": ["Limpar corrimãos/maçanetas", "Organizar mobiliário comum", "Varrer e passar pano nas áreas de circulação"]
+        };
+
+        // Vincula as tarefas das salas em loop para evitar repetição de código
+        for (let i = 1; i <= 50; i++) { tarefasPorLocal[`Sala ${i}`] = checklistPadraoSala; }
+
+        // Elementos do DOM
+        const unidadeSelect = document.getElementById('unidade-select');
+        const localSelect = document.getElementById('local-select');
+        const containerTarefas = document.getElementById('container-tarefas');
+        const listaTarefas = document.getElementById('lista-tarefas');
+        const btnEnviar = document.getElementById('btn-enviar');
+        const form = document.getElementById('form-limpeza');
+        const loading = document.getElementById('loading');
+
+        // Mapeamento de quais ambientes pertencem a cada unidade
+        const ambientesPorUnidade = {
+            "Unidade Matriz": [
+                "Recepção Principal", "Recepção Expansão 1", "Recepção Expansão 2", "Área Comum/Hall",
+                "Banheiro Masculino", "Banheiro Feminino", "Copa 1", "Copa 2", 
+                "Sala de RH", "Sala do marketing", "Sala da ouvidoria",
+                // Salas de 1 a 50 na Matriz
+                ...Array.from({length: 50}, (_, i) => `Sala ${i+1}`)
+            ],
+            "Unidade Sul": [
+               "Recepção Principal", "Recepção Expansão 1", "Recepção Expansão 2", "Área Comum/Hall",
+                "Banheiro Masculino", "Banheiro Feminino", "Copa 1", "Copa 2", 
+                "Sala de RH", "Sala do marketing", "Sala da ouvidoria",
+                // Salas de 1 a 20 na Unidade Sul
+                ...Array.from({length: 20}, (_, i) => `Sala ${i+1}`)
+            ],
+            "Unidade Life": [
+                "Recepção Principal", "Recepção Expansão 1", "Recepção Expansão 2", "Área Comum/Hall",
+                "Banheiro Masculino", "Banheiro Feminino", "Copa 1", "Copa 2", 
+                "Sala de RH", "Sala do marketing", "Sala da ouvidoria",
+                // Salas de 1 a 20 na Unidade Life
+                ...Array.from({length: 20}, (_, i) => `Sala ${i+1}`)
+            ]
+        };
+
+        // Evento 1: Quando escolhe a unidade, reconstrói o menu de ambientes
+        unidadeSelect.addEventListener('change', (e) => {
+            const unidade = e.target.value;
+            localSelect.innerHTML = '<option value="">Selecione o local...</option>';
+            containerTarefas.classList.add('hidden');
+            listaTarefas.innerHTML = '';
+            btnEnviar.disabled = true;
+            btnEnviar.className = "w-full bg-gray-300 text-white font-bold py-4 rounded-xl shadow-lg transition-all transform active:scale-95";
+
+            if (unidade && ambientesPorUnidade[unidade]) {
+                localSelect.disabled = false;
+                localSelect.className = "w-full px-4 py-2 border rounded-lg bg-white outline-none focus:ring-2 focus:ring-teal-400 border-gray-300 transition";
+                
+                ambientesPorUnidade[unidade].forEach(ambiente => {
+                    const option = document.createElement('option');
+                    option.value = ambiente;
+                    option.textContent = ambiente;
+                    localSelect.appendChild(option);
+                });
+            } else {
+                localSelect.disabled = true;
+                localSelect.className = "w-full px-4 py-2 border rounded-lg bg-gray-100 outline-none border-gray-300 transition cursor-not-allowed";
+                localSelect.innerHTML = '<option value="">Selecione primeiro a unidade...</option>';
+            }
+        });
+
+        // Evento 2: Quando escolhe o ambiente, monta o checklist na tela
+        localSelect.addEventListener('change', (e) => {
+            const local = e.target.value;
+            listaTarefas.innerHTML = '';
+            
+            if (local && tarefasPorLocal[local]) {
+                containerTarefas.classList.remove('hidden');
+                tarefasPorLocal[local].forEach((t, i) => {
+                    const div = document.createElement('div');
+                    div.className = "flex items-center p-3 bg-white border border-gray-200 rounded-lg cursor-pointer transition select-none hover:border-teal-300";
+                    div.innerHTML = `
+                        <input type="checkbox" id="t-${i}" value="${t}" class="w-5 h-5 accent-teal-600 pointer-events-none">
+                        <label for="t-${i}" class="ml-3 text-sm w-full cursor-pointer">${t}</label>
+                    `;
+                    
+                    div.onclick = () => {
+                        const cb = div.querySelector('input');
+                        cb.checked = !cb.checked;
+                        div.classList.toggle('card-checked', cb.checked);
+                    };
+                    listaTarefas.appendChild(div);
+                });
+                
+                btnEnviar.disabled = false;
+                btnEnviar.className = "w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-4 rounded-xl shadow-lg transition-all transform active:scale-95 cursor-pointer";
+            } else {
+                containerTarefas.classList.add('hidden');
+                btnEnviar.disabled = true;
+                btnEnviar.className = "w-full bg-gray-300 text-white font-bold py-4 rounded-xl shadow-lg transition-all transform active:scale-95";
+            }
+        });
+
+        // Evento 3: Envio dos dados enriquecidos com a Unidade para a planilha
+        form.onsubmit = async (e) => {
+            e.preventDefault();
+            loading.classList.remove('hidden');
+
+            const tarefas = Array.from(document.querySelectorAll('input[type="checkbox"]:checked')).map(c => c.value);
+            const pendentes = Array.from(document.querySelectorAll('input[type="checkbox"]:not(:checked)')).map(c => c.value);
+            
+            const payload = {
+                data: new Date().toLocaleDateString('pt-BR'),
+                hora: new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}),
+                unidade: unidadeSelect.value, // ENVIANDO A UNIDADE SELECIONADA
+                colaborador: document.getElementById('colaborador').value,
+                local: localSelect.value,
+                concluidas: tarefas.join(', ') || 'Nenhuma tarefa marcada',
+                pendentes: pendentes.join(', ') || 'Nenhuma',
+                observacoes: document.getElementById('observacoes').value || 'Sem observações'
+            };
+
+            try {
+                await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: JSON.stringify(payload)
+                });
+
+                alert('Sucesso! Registro enviado para a planilha.');
+                
+                form.reset();
+                containerTarefas.classList.add('hidden');
+                localSelect.disabled = true;
+                localSelect.className = "w-full px-4 py-2 border rounded-lg bg-gray-100 outline-none border-gray-300 transition cursor-not-allowed";
+                localSelect.innerHTML = '<option value="">Selecione primeiro a unidade...</option>';
+                btnEnviar.disabled = true;
+                btnEnviar.className = "w-full bg-gray-300 text-white font-bold py-4 rounded-xl shadow-lg transition-all transform active:scale-95";
+            } catch (error) {
+                alert('Erro na transmissão. Verifique a internet.');
+                console.error(error);
+            } finally {
+                loading.classList.add('hidden');
+            }
+        };
+    </script>
+</body>
+</html>

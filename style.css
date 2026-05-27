@@ -1,0 +1,31 @@
+/* Customizações para melhorar a usabilidade mobile (Toques de tela) */
+input[type="checkbox"] {
+    cursor: pointer;
+    accent-color: #2563eb; /* Azul padrão do Tailwind */
+}
+
+/* Customização leve da barra de rolagem do histórico */
+#historico-lista::-webkit-scrollbar {
+    width: 4px;
+}
+
+#historico-lista::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+#historico-lista::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+#historico-lista::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Evita zoom automático indesejado em inputs no iOS/Safari */
+@media screen and (max-width: 768px) {
+    input, select, textarea {
+        font-size: 16px !important;
+    }
+}
