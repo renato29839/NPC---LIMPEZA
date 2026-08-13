@@ -3,249 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Limpeza Digital</title>
+    <meta name="description" content="Sistema digital de controle de limpeza para Neuropsicocentro">
+    <meta name="theme-color" content="#4db6ac">
+    <title>Sistema de Limpeza Digital - Neuropsicocentro</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        :root {
-            --verde-agua-claro: #e0f2f1;
-            --verde-agua-medio: #4db6ac;
-            --verde-agua-escuro: #00897b;
-            --verde-agua-accent: #26a69a;
-        }
-        body { background-color: #f0f7f7; }
-        .bg-verde-agua { background-color: var(--verde-agua-medio); }
-        .text-verde-agua { color: var(--verde-agua-escuro); }
-        .border-verde-agua { border-color: var(--verde-agua-medio); }
-        
-        /* Estilo para checkboxes marcados */
-        .card-checked { background-color: var(--verde-agua-claro) !important; border-color: var(--verde-agua-accent) !important; }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body class="p-4 font-sans text-gray-700">
+<body class="p-4 font-sans text-gray-700 bg-gradient-to-br from-teal-50 to-cyan-50" role="application" aria-label="Sistema de controle de limpeza">
 
-    <div class="max-w-md mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-teal-100">
-        <div class="bg-verde-agua p-6 text-white text-center">
-            <h1 class="text-2xl font-bold">NEUROPSICOCENTRO</h1>
-            <p class="text-teal-50 opacity-90 text-sm mt-1">Checklist de Manutenção de Ambientes</p>
+    <div class="max-w-md mx-auto">
+        <!-- Header com Logo Discreta -->
+        <div class="bg-gradient-to-r from-teal-500 to-teal-600 rounded-t-2xl shadow-xl overflow-hidden">
+            <div class="p-6 text-white text-center relative">
+                <!-- Logo NPC discreta no canto superior direito -->
+                <div class="absolute top-2 right-2 opacity-15 transform scale-50" aria-hidden="true">
+                    <svg viewBox="0 0 200 200" width="60" height="60">
+                        <circle cx="100" cy="100" r="95" fill="none" stroke="currentColor" stroke-width="8" opacity="0.3"/>
+                        <circle cx="100" cy="100" r="85" fill="none" stroke="currentColor" stroke-width="6" opacity="0.5"/>
+                        <text x="100" y="120" font-size="70" font-weight="bold" text-anchor="middle" fill="currentColor" font-family="Arial, sans-serif">NPC</text>
+                    </svg>
+                </div>
+                <h1 class="text-2xl font-bold">NEUROPSICOCENTRO</h1>
+                <p class="text-teal-100 text-sm mt-2">Checklist de Manutenção de Ambientes</p>
+            </div>
         </div>
 
-        <form id="form-limpeza" class="p-6 space-y-5">
-            <!-- 1. Nome do Colaborador -->
-            <div>
-                <label class="block text-sm font-bold text-verde-agua mb-1">Nome do Colaborador</label>
-                <input type="text" id="colaborador" required 
-                    class="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-teal-400 border-gray-300 transition" placeholder="Digite seu nome">
-            </div>
+        <!-- Formulário Principal -->
+        <div class="bg-white rounded-b-2xl shadow-xl overflow-hidden border border-teal-100">
 
-            <!-- 2. Seleção de Unidade (NOVO) -->
-            <div>
-                <label class="block text-sm font-bold text-verde-agua mb-1">Unidade / Filial</label>
-                <select id="unidade-select" required
-                    class="w-full px-4 py-2 border rounded-lg bg-white outline-none focus:ring-2 focus:ring-teal-400 border-gray-300 transition">
-                    <option value="">Selecione a unidade...</option>
-                    <option value="Unidade Matriz">Unidade Matriz</option>
-                    <option value="Unidade Sul">Unidade Sul</option>
-                    <option value="Unidade Life">Unidade Life</option>
-                </select>
-            </div>
+            <form id="form-limpeza" class="p-6 space-y-5" novalidate aria-label="Formulário de registro de limpeza">
+                
+                <!-- 1. Nome do Colaborador -->
+                <div class="form-group">
+                    <label for="colaborador" class="block text-sm font-bold text-teal-700 mb-2">
+                        Nome do Colaborador <span class="text-red-500" aria-label="obrigatório">*</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        id="colaborador" 
+                        name="colaborador"
+                        required 
+                        autocomplete="name"
+                        aria-required="true"
+                        aria-describedby="colaborador-error"
+                        class="input-field"
+                        placeholder="Ex: João Silva"
+                    >
+                    <span id="colaborador-error" class="error-message hidden text-red-500 text-sm mt-1" role="alert"></span>
+                </div>
 
-            <!-- 3. Seleção de Ambiente (Fica ativo após escolher a unidade) -->
-            <div>
-                <label class="block text-sm font-bold text-verde-agua mb-1">Ambiente Selecionado</label>
-                <select id="local-select" required disabled
-                    class="w-full px-4 py-2 border rounded-lg bg-gray-100 outline-none border-gray-300 transition cursor-not-allowed">
-                    <option value="">Selecione primeiro a unidade...</option>
-                </select>
-            </div>
+                <!-- 2. Seleção de Unidade -->
+                <div class="form-group">
+                    <label for="unidade-select" class="block text-sm font-bold text-teal-700 mb-2">
+                        Unidade / Filial <span class="text-red-500" aria-label="obrigatório">*</span>
+                    </label>
+                    <select 
+                        id="unidade-select" 
+                        name="unidade"
+                        required
+                        aria-required="true"
+                        aria-describedby="unidade-error"
+                        class="input-field cursor-pointer">
+                        <option value="">Selecione a unidade...</option>
+                        <option value="Unidade Matriz">Unidade Matriz</option>
+                        <option value="Unidade Sul">Unidade Sul</option>
+                        <option value="Unidade Life">Unidade Life</option>
+                    </select>
+                    <span id="unidade-error" class="error-message hidden text-red-500 text-sm mt-1" role="alert"></span>
+                </div>
 
-            <!-- 4. Checklist de tarefas -->
-            <div id="container-tarefas" class="hidden space-y-2">
-                <h3 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Tarefas Necessárias</h3>
-                <div id="lista-tarefas" class="space-y-2"></div>
-            </div>
+                <!-- 3. Seleção de Ambiente -->
+                <div class="form-group">
+                    <label for="local-select" class="block text-sm font-bold text-teal-700 mb-2">
+                        Ambiente Selecionado <span class="text-red-500" aria-label="obrigatório">*</span>
+                    </label>
+                    <select 
+                        id="local-select" 
+                        name="local"
+                        required 
+                        disabled
+                        aria-required="true"
+                        aria-describedby="local-error"
+                        class="input-field cursor-not-allowed disabled:opacity-60">
+                        <option value="">Selecione primeiro a unidade...</option>
+                    </select>
+                    <span id="local-error" class="error-message hidden text-red-500 text-sm mt-1" role="alert"></span>
+                </div>
 
-            <!-- 5. Observações -->
-            <div>
-                <label class="block text-sm font-bold text-verde-agua mb-1">Observações</label>
-                <textarea id="observacoes" rows="2" 
-                    class="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-teal-400 border-gray-300 transition resize-none" placeholder="Algo fora do comum?"></textarea>
-            </div>
+                <!-- 4. Checklist de tarefas -->
+                <div id="container-tarefas" class="hidden space-y-3">
+                    <h3 class="text-sm font-bold text-teal-700 uppercase tracking-wide">Tarefas do Ambiente</h3>
+                    <div id="lista-tarefas" class="space-y-2" role="group" aria-label="Lista de tarefas a realizar"></div>
+                    <p class="text-xs text-gray-500 text-center mt-2" aria-live="polite" id="tarefas-contador"></p>
+                </div>
 
-            <!-- 6. Botão de Envio -->
-            <button type="submit" id="btn-enviar" disabled
-                class="w-full bg-gray-300 text-white font-bold py-4 rounded-xl shadow-lg transition-all transform active:scale-95">
-                ENVIAR PARA PLANILHA
-            </button>
-        </form>
-    </div>
+                <!-- 5. Observações -->
+                <div class="form-group">
+                    <label for="observacoes" class="block text-sm font-bold text-teal-700 mb-2">
+                        Observações <span class="text-gray-400 text-xs">(opcional)</span>
+                    </label>
+                    <textarea 
+                        id="observacoes" 
+                        name="observacoes"
+                        rows="2"
+                        maxlength="500"
+                        aria-describedby="observacoes-counter"
+                        class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition resize-none"
+                        placeholder="Ex: Piso molhado, lixo transbordando..."
+                    ></textarea>
+                    <p id="observacoes-counter" class="text-xs text-gray-400 text-right mt-1"><span id="obs-chars">0</span>/500</p>
+                </div>
 
-    <!-- Tela de Carregamento (Loading) -->
-    <div id="loading" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center text-white font-bold">
-        <div class="bg-white text-teal-600 p-6 rounded-lg shadow-xl text-center">
-            <svg class="animate-spin h-8 w-8 mx-auto mb-2" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-            Enviando dados para a planilha...
+                <!-- 6. Botão de Envio -->
+                <button 
+                    type="submit" 
+                    id="btn-enviar" 
+                    disabled
+                    class="btn-enviar w-full bg-gray-300 text-white font-bold py-4 rounded-xl shadow-lg transition-all cursor-not-allowed disabled:opacity-50 disabled:cursor-not-allowed"
+                    aria-label="Enviar formulário para planilha"
+                >
+                    ENVIAR PARA PLANILHA
+                </button>
+            </form>
         </div>
     </div>
 
-    <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxisjHRYbyyMrzi0WAJIP9PwYEtqD7iHBHA8fxFl8DUv2GMIZLlJyX89dMHBVbPQm232g/exec";
+    <!-- Modal de Carregamento -->
+    <div id="loading" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50" role="status" aria-label="Processando requisição" aria-hidden="true">
+        <div class="bg-white text-teal-600 p-8 rounded-lg shadow-2xl text-center">
+            <svg class="animate-spin h-10 w-10 mx-auto mb-4 text-teal-500" viewBox="0 0 24 24" role="presentation">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <p class="font-semibold">Enviando dados...</p>
+            <p class="text-sm text-gray-500 mt-2">Por favor, aguarde</p>
+        </div>
+    </div>
 
-        // Definição dos blocos de tarefas padrão
-        const checklistPadraoSala = ["Retirar lixo individual", "Limpar mesas e superfícies", "Varrer o chão", "Passar pano com desinfetante", "Limpar marcas de dedos em vidros/portas"];
-        const checklistPadraoCopa = ["Limpar balcão e mesas", "Lavar pia e organizar louça", "Retirar lixo orgânico e reciclável", "Passar pano no chão com desinfetante", "Verificar limpeza externa do micro-ondas"];
+    <!-- Modal de Sucesso -->
+    <div id="success-modal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50" role="dialog" aria-labelledby="success-title" aria-modal="true">
+        <div class="bg-white text-center p-8 rounded-lg shadow-2xl max-w-sm mx-4">
+            <div class="text-green-500 text-5xl mb-4">✓</div>
+            <h2 id="success-title" class="text-xl font-bold text-gray-800 mb-2">Sucesso!</h2>
+            <p class="text-gray-600 mb-6">Registro enviado para a planilha com sucesso.</p>
+            <button id="btn-close-success" class="bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-6 rounded-lg transition">OK</button>
+        </div>
+    </div>
 
-        // Banco de dados central das tarefas mapeadas por ambiente
-        const tarefasPorLocal = {
-            "Banheiro Masculino": ["Higienização do vaso e mictório", "Limpeza da pia e espelho", "Reposição de papel/sabonete", "Troca de lixo", "Lavar o piso"],
-            "Banheiro Feminino": ["Higienização dos vasos sanitários", "Limpeza da pia e espelho", "Reposição de papel/sabonete/produtos", "Troca de lixos", "Lavar o piso"],
-            "Recepção Principal": ["Limpar balcão de atendimento", "Organizar poltronas/revistas", "Limpar vidros/portas de entrada", "Aspirar tapete / Passar pano"],
-            "Recepção Expansão 1": ["Limpeza de superfícies e mesas", "Organizar cadeiras", "Retirar lixo local", "Passar pano no piso"],
-            "Recepção Expansão 2": ["Limpeza de superfícies e mesas", "Organizar cadeiras", "Retirar lixo local", "Passar pano no piso"],
-            "Sala de RH": checklistPadraoSala,
-            "Sala do marketing": checklistPadraoSala,
-            "Sala da ouvidoria": checklistPadraoSala,
-            "Copa 1": checklistPadraoCopa,
-            "Copa 2": checklistPadraoCopa,
-            "Área Comum/Hall": ["Limpar corrimãos/maçanetas", "Organizar mobiliário comum", "Varrer e passar pano nas áreas de circulação"]
-        };
+    <!-- Modal de Erro -->
+    <div id="error-modal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50" role="dialog" aria-labelledby="error-title" aria-modal="true">
+        <div class="bg-white text-center p-8 rounded-lg shadow-2xl max-w-sm mx-4">
+            <div class="text-red-500 text-5xl mb-4">⚠</div>
+            <h2 id="error-title" class="text-xl font-bold text-gray-800 mb-2">Erro na Transmissão</h2>
+            <p class="text-gray-600 mb-6" id="error-message">Verifique sua conexão com a internet e tente novamente.</p>
+            <button id="btn-close-error" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-6 rounded-lg transition">OK</button>
+        </div>
+    </div>
 
-        // Vincula as tarefas das salas em loop para evitar repetição de código
-        for (let i = 1; i <= 50; i++) { tarefasPorLocal[`Sala ${i}`] = checklistPadraoSala; }
+    <!-- Rodapé -->
+    <footer class="mt-8 text-center text-xs text-gray-400 pb-4">
+        <p>© 2026 Neuropsicocentro - Sistema de Controle de Limpeza</p>
+    </footer>
 
-        // Elementos do DOM
-        const unidadeSelect = document.getElementById('unidade-select');
-        const localSelect = document.getElementById('local-select');
-        const containerTarefas = document.getElementById('container-tarefas');
-        const listaTarefas = document.getElementById('lista-tarefas');
-        const btnEnviar = document.getElementById('btn-enviar');
-        const form = document.getElementById('form-limpeza');
-        const loading = document.getElementById('loading');
-
-        // Mapeamento de quais ambientes pertencem a cada unidade
-        const ambientesPorUnidade = {
-            "Unidade Matriz": [
-                "Recepção Principal", "Recepção Expansão 1", "Recepção Expansão 2", "Área Comum/Hall",
-                "Banheiro Masculino", "Banheiro Feminino", "Copa 1", "Copa 2", 
-                "Sala de RH", "Sala do marketing", "Sala da ouvidoria",
-                // Salas de 1 a 50 na Matriz
-                ...Array.from({length: 50}, (_, i) => `Sala ${i+1}`)
-            ],
-            "Unidade Sul": [
-               "Recepção Principal", "Recepção Expansão 1", "Recepção Expansão 2", "Área Comum/Hall",
-                "Banheiro Masculino", "Banheiro Feminino", "Copa 1", "Copa 2", 
-                "Sala de RH", "Sala do marketing", "Sala da ouvidoria",
-                // Salas de 1 a 20 na Unidade Sul
-                ...Array.from({length: 20}, (_, i) => `Sala ${i+1}`)
-            ],
-            "Unidade Life": [
-                "Recepção Principal", "Recepção Expansão 1", "Recepção Expansão 2", "Área Comum/Hall",
-                "Banheiro Masculino", "Banheiro Feminino", "Copa 1", "Copa 2", 
-                "Sala de RH", "Sala do marketing", "Sala da ouvidoria",
-                // Salas de 1 a 20 na Unidade Life
-                ...Array.from({length: 20}, (_, i) => `Sala ${i+1}`)
-            ]
-        };
-
-        // Evento 1: Quando escolhe a unidade, reconstrói o menu de ambientes
-        unidadeSelect.addEventListener('change', (e) => {
-            const unidade = e.target.value;
-            localSelect.innerHTML = '<option value="">Selecione o local...</option>';
-            containerTarefas.classList.add('hidden');
-            listaTarefas.innerHTML = '';
-            btnEnviar.disabled = true;
-            btnEnviar.className = "w-full bg-gray-300 text-white font-bold py-4 rounded-xl shadow-lg transition-all transform active:scale-95";
-
-            if (unidade && ambientesPorUnidade[unidade]) {
-                localSelect.disabled = false;
-                localSelect.className = "w-full px-4 py-2 border rounded-lg bg-white outline-none focus:ring-2 focus:ring-teal-400 border-gray-300 transition";
-                
-                ambientesPorUnidade[unidade].forEach(ambiente => {
-                    const option = document.createElement('option');
-                    option.value = ambiente;
-                    option.textContent = ambiente;
-                    localSelect.appendChild(option);
-                });
-            } else {
-                localSelect.disabled = true;
-                localSelect.className = "w-full px-4 py-2 border rounded-lg bg-gray-100 outline-none border-gray-300 transition cursor-not-allowed";
-                localSelect.innerHTML = '<option value="">Selecione primeiro a unidade...</option>';
-            }
-        });
-
-        // Evento 2: Quando escolhe o ambiente, monta o checklist na tela
-        localSelect.addEventListener('change', (e) => {
-            const local = e.target.value;
-            listaTarefas.innerHTML = '';
-            
-            if (local && tarefasPorLocal[local]) {
-                containerTarefas.classList.remove('hidden');
-                tarefasPorLocal[local].forEach((t, i) => {
-                    const div = document.createElement('div');
-                    div.className = "flex items-center p-3 bg-white border border-gray-200 rounded-lg cursor-pointer transition select-none hover:border-teal-300";
-                    div.innerHTML = `
-                        <input type="checkbox" id="t-${i}" value="${t}" class="w-5 h-5 accent-teal-600 pointer-events-none">
-                        <label for="t-${i}" class="ml-3 text-sm w-full cursor-pointer">${t}</label>
-                    `;
-                    
-                    div.onclick = () => {
-                        const cb = div.querySelector('input');
-                        cb.checked = !cb.checked;
-                        div.classList.toggle('card-checked', cb.checked);
-                    };
-                    listaTarefas.appendChild(div);
-                });
-                
-                btnEnviar.disabled = false;
-                btnEnviar.className = "w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-4 rounded-xl shadow-lg transition-all transform active:scale-95 cursor-pointer";
-            } else {
-                containerTarefas.classList.add('hidden');
-                btnEnviar.disabled = true;
-                btnEnviar.className = "w-full bg-gray-300 text-white font-bold py-4 rounded-xl shadow-lg transition-all transform active:scale-95";
-            }
-        });
-
-        // Evento 3: Envio dos dados enriquecidos com a Unidade para a planilha
-        form.onsubmit = async (e) => {
-            e.preventDefault();
-            loading.classList.remove('hidden');
-
-            const tarefas = Array.from(document.querySelectorAll('input[type="checkbox"]:checked')).map(c => c.value);
-            const pendentes = Array.from(document.querySelectorAll('input[type="checkbox"]:not(:checked)')).map(c => c.value);
-            
-            const payload = {
-                data: new Date().toLocaleDateString('pt-BR'),
-                hora: new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}),
-                unidade: unidadeSelect.value, // ENVIANDO A UNIDADE SELECIONADA
-                colaborador: document.getElementById('colaborador').value,
-                local: localSelect.value,
-                concluidas: tarefas.join(', ') || 'Nenhuma tarefa marcada',
-                pendentes: pendentes.join(', ') || 'Nenhuma',
-                observacoes: document.getElementById('observacoes').value || 'Sem observações'
-            };
-
-            try {
-                await fetch(WEB_APP_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    body: JSON.stringify(payload)
-                });
-
-                alert('Sucesso! Registro enviado para a planilha.');
-                
-                form.reset();
-                containerTarefas.classList.add('hidden');
-                localSelect.disabled = true;
-                localSelect.className = "w-full px-4 py-2 border rounded-lg bg-gray-100 outline-none border-gray-300 transition cursor-not-allowed";
-                localSelect.innerHTML = '<option value="">Selecione primeiro a unidade...</option>';
-                btnEnviar.disabled = true;
-                btnEnviar.className = "w-full bg-gray-300 text-white font-bold py-4 rounded-xl shadow-lg transition-all transform active:scale-95";
-            } catch (error) {
-                alert('Erro na transmissão. Verifique a internet.');
-                console.error(error);
-            } finally {
-                loading.classList.add('hidden');
-            }
-        };
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
