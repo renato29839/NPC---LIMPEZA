@@ -1,31 +1,239 @@
-/* Customizações para melhorar a usabilidade mobile (Toques de tela) */
+/* ============================================
+   ESTILOS GLOBAIS E ACESSIBILIDADE
+   ============================================ */
+
+:root {
+    --teal-50: #f0fdfa;
+    --teal-100: #ccfbf1;
+    --teal-400: #2dd4bf;
+    --teal-500: #14b8a6;
+    --teal-600: #0d9488;
+    --teal-700: #0f766e;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --red-500: #ef4444;
+}
+
+/* Estilos dos campos de entrada */
+.input-field {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--gray-300);
+    border-radius: 0.5rem;
+    outline: none;
+    transition: all 0.2s ease-in-out;
+}
+
+.input-field:focus {
+    border-color: var(--teal-500);
+    box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.2);
+}
+
+.input-field:disabled {
+    opacity: 0.6;
+    cursor: not-allowed !important;
+}
+
+.input-field:not(:disabled) {
+    cursor: pointer !important;
+}
+
+.input-field::placeholder {
+    color: var(--gray-400);
+}
+
+/* Estilos de grupos de formulário */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.error-message {
+    color: var(--red-500);
+    font-size: 0.875rem;
+    display: block;
+}
+
+.error-message.hidden {
+    display: none;
+}
+
+/* Estilos de cards de tarefas */
+.card-checked {
+    background-color: var(--teal-50);
+    border-color: var(--teal-400);
+}
+
+/* Customizações para checkboxes */
 input[type="checkbox"] {
     cursor: pointer;
-    accent-color: #2563eb; /* Azul padrão do Tailwind */
+    accent-color: var(--teal-500);
 }
 
-/* Customização leve da barra de rolagem do histórico */
-#historico-lista::-webkit-scrollbar {
-    width: 4px;
+input[type="checkbox"]:focus-visible {
+    outline: 2px solid var(--teal-500);
+    outline-offset: 2px;
 }
 
-#historico-lista::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
+/* Customizações para selects */
+select {
+    cursor: pointer;
 }
 
-#historico-lista::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 10px;
+select:focus {
+    outline: none;
 }
 
-#historico-lista::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
+/* Botão customizado */
+.btn-enviar {
+    transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
-/* Evita zoom automático indesejado em inputs no iOS/Safari */
+.btn-enviar:not(:disabled):hover {
+    background-color: var(--teal-700);
+    transform: scale(1.02);
+}
+
+.btn-enviar:not(:disabled):active {
+    transform: scale(0.98);
+}
+
+.btn-enviar:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ============================================
+   ACESSIBILIDADE MOBILE
+   ============================================ */
+
 @media screen and (max-width: 768px) {
-    input, select, textarea {
+    /* Evita zoom automático indesejado no iOS/Safari */
+    input,
+    select,
+    textarea {
         font-size: 16px !important;
     }
+
+    /* Touch targets adequados para uso em smartphones */
+    .input-field,
+    button {
+        min-height: 48px;
+    }
+
+    input[type="checkbox"] {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+}
+
+/* ============================================
+   MODO ESCURO (PREFERÊNCIA DO SISTEMA)
+   ============================================ */
+
+@media (prefers-color-scheme: dark) {
+    body {
+        background: linear-gradient(to bottom right, #0f172a, #1e293b);
+        color: #e2e8f0;
+    }
+
+    .bg-white {
+        background-color: #1e293b !important;
+        border-color: #334155 !important;
+    }
+
+    .input-field {
+        background-color: #0f172a;
+        color: #f8fafc;
+        border-color: #475569;
+    }
+
+    .input-field:focus {
+        border-color: var(--teal-500);
+        box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.3);
+    }
+
+    .text-gray-700, .text-gray-800 {
+        color: #cbd5e1 !important;
+    }
+
+    .text-gray-600 {
+        color: #94a3b8 !important;
+    }
+}
+
+/* ============================================
+   ANIMAÇÕES E TRANSIÇÕES
+   ============================================ */
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#container-tarefas:not(.hidden) {
+    animation: slideDown 0.3s ease-out;
+}
+
+/* Animação do modal de sucesso */
+@keyframes successBounce {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.15);
+    }
+}
+
+#success-modal:not(.hidden) .text-green-500 {
+    animation: successBounce 0.5s ease-out;
+}
+
+/* ============================================
+   IMPRESSÃO
+   ============================================ */
+
+@media print {
+    body {
+        background: white;
+    }
+
+    .fixed,
+    button {
+        display: none !important;
+    }
+
+    form {
+        box-shadow: none;
+        border: 1px solid #000;
+    }
+}
+
+/* ============================================
+   UTILITÁRIOS DE ACESSIBILIDADE
+   ============================================ */
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
 }
