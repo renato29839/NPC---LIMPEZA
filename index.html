@@ -4,167 +4,193 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Sistema digital de controle de limpeza para Neuropsicocentro">
-    <meta name="theme-color" content="#4db6ac">
+    <meta name="theme-color" content="#0d9488">
     <title>Sistema de Limpeza Digital - Neuropsicocentro</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Aplica o tema (claro/escuro/automático) antes de desenhar a página, sem "piscar". -->
+    <script>
+        (function () {
+            var pref = 'auto';
+            try { pref = localStorage.getItem('npc-limpeza:tema') || 'auto'; } catch (e) {}
+            var escuro = pref === 'escuro' || (pref === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            document.documentElement.setAttribute('data-theme', escuro ? 'dark' : 'light');
+        })();
+    </script>
+
+    <!-- PWA: permite instalar na tela inicial e abrir sem internet -->
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="NPC Limpeza">
+
+    <!-- Tailwind compilado (gerado por "npm run build:css") + estilos próprios -->
+    <link rel="stylesheet" href="assets/tailwind.css">
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="p-4 font-sans text-gray-700 bg-gradient-to-br from-teal-50 to-cyan-50" role="application" aria-label="Sistema de controle de limpeza">
+<body>
 
-    <div class="max-w-md mx-auto">
-        <!-- Header com Logo Discreta -->
-        <div class="bg-gradient-to-r from-teal-500 to-teal-600 rounded-t-2xl shadow-xl overflow-hidden">
-            <div class="p-6 text-white text-center relative">
-                <!-- Logo NPC discreta no canto superior direito -->
-                <div class="absolute top-2 right-2 opacity-15 transform scale-50" aria-hidden="true">
-                    <svg viewBox="0 0 200 200" width="60" height="60">
-                        <circle cx="100" cy="100" r="95" fill="none" stroke="currentColor" stroke-width="8" opacity="0.3"/>
-                        <circle cx="100" cy="100" r="85" fill="none" stroke="currentColor" stroke-width="6" opacity="0.5"/>
-                        <text x="100" y="120" font-size="70" font-weight="bold" text-anchor="middle" fill="currentColor" font-family="Arial, sans-serif">NPC</text>
-                    </svg>
-                </div>
-                <h1 class="text-2xl font-bold">NEUROPSICOCENTRO</h1>
-                <p class="text-teal-100 text-sm mt-2">Checklist de Manutenção de Ambientes</p>
+    <noscript>
+        <p class="aviso-noscript">Este sistema precisa do JavaScript ativado no navegador para funcionar.</p>
+    </noscript>
+
+    <main class="pagina">
+        <!-- Cabeçalho -->
+        <header class="cabecalho">
+            <div class="cabecalho-logo" aria-hidden="true">
+                <svg viewBox="0 0 200 200" width="44" height="44">
+                    <circle cx="100" cy="100" r="88" fill="none" stroke="currentColor" stroke-width="10" opacity="0.5"/>
+                    <text x="100" y="122" font-size="64" font-weight="bold" text-anchor="middle" fill="currentColor" font-family="Arial, sans-serif">NPC</text>
+                </svg>
             </div>
+            <div class="cabecalho-texto">
+                <h1>NEUROPSICOCENTRO</h1>
+                <p>Checklist de Manutenção de Ambientes</p>
+            </div>
+
+            <div class="seletor-tema" role="radiogroup" aria-label="Tema da tela">
+                <button type="button" role="radio" data-tema="claro" aria-checked="false" title="Tema claro">
+                    <span aria-hidden="true">☀</span> Claro
+                </button>
+                <button type="button" role="radio" data-tema="escuro" aria-checked="false" title="Tema escuro">
+                    <span aria-hidden="true">☾</span> Escuro
+                </button>
+                <button type="button" role="radio" data-tema="auto" aria-checked="false" title="Seguir o tema do celular">
+                    <span aria-hidden="true">◐</span> Auto
+                </button>
+            </div>
+        </header>
+
+        <!-- Aviso de registros aguardando envio (fila offline) -->
+        <div id="banner-fila" class="banner-fila hidden" role="status" aria-live="polite">
+            <span id="banner-fila-texto"></span>
+            <button type="button" id="btn-reenviar" class="banner-fila-botao">Enviar agora</button>
         </div>
 
-        <!-- Formulário Principal -->
-        <div class="bg-white rounded-b-2xl shadow-xl overflow-hidden border border-teal-100">
+        <!-- Formulário -->
+        <form id="form-limpeza" class="cartao" novalidate aria-label="Formulário de registro de limpeza">
 
-            <form id="form-limpeza" class="p-6 space-y-5" novalidate aria-label="Formulário de registro de limpeza">
-                
-                <!-- 1. Nome do Colaborador -->
+            <!-- Etapa 1 -->
+            <section class="etapa" aria-labelledby="etapa-1">
+                <h2 id="etapa-1" class="etapa-titulo"><span class="etapa-num">1</span> Quem está registrando</h2>
                 <div class="form-group">
-                    <label for="colaborador" class="block text-sm font-bold text-teal-700 mb-2">
-                        Nome do Colaborador <span class="text-red-500" aria-label="obrigatório">*</span>
-                    </label>
-                    <input 
-                        type="text" 
-                        id="colaborador" 
-                        name="colaborador"
-                        required 
-                        autocomplete="name"
-                        aria-required="true"
-                        aria-describedby="colaborador-error"
-                        class="input-field"
-                        placeholder="Ex: João Silva"
-                    >
-                    <span id="colaborador-error" class="error-message hidden text-red-500 text-sm mt-1" role="alert"></span>
+                    <label for="colaborador" class="rotulo">Nome do colaborador <span class="obrigatorio" aria-hidden="true">*</span></label>
+                    <input type="text" id="colaborador" name="colaborador" required maxlength="80" autocomplete="name"
+                           list="lista-colaboradores" aria-required="true" aria-describedby="colaborador-error"
+                           class="input-field" placeholder="Ex: João Silva">
+                    <datalist id="lista-colaboradores"></datalist>
+                    <span id="colaborador-error" class="error-message hidden" role="alert"></span>
                 </div>
+            </section>
 
-                <!-- 2. Seleção de Unidade -->
+            <!-- Etapa 2 -->
+            <section class="etapa" aria-labelledby="etapa-2">
+                <h2 id="etapa-2" class="etapa-titulo"><span class="etapa-num">2</span> Onde foi a limpeza</h2>
                 <div class="form-group">
-                    <label for="unidade-select" class="block text-sm font-bold text-teal-700 mb-2">
-                        Unidade / Filial <span class="text-red-500" aria-label="obrigatório">*</span>
-                    </label>
-                    <select 
-                        id="unidade-select" 
-                        name="unidade"
-                        required
-                        aria-required="true"
-                        aria-describedby="unidade-error"
-                        class="input-field cursor-pointer">
+                    <label for="unidade-select" class="rotulo">Unidade <span class="obrigatorio" aria-hidden="true">*</span></label>
+                    <select id="unidade-select" name="unidade" required aria-required="true"
+                            aria-describedby="unidade-error" class="input-field">
                         <option value="">Selecione a unidade...</option>
-                        <option value="Unidade Matriz">Unidade Matriz</option>
-                        <option value="Unidade Sul">Unidade Sul</option>
-                        <option value="Unidade Life">Unidade Life</option>
                     </select>
-                    <span id="unidade-error" class="error-message hidden text-red-500 text-sm mt-1" role="alert"></span>
+                    <span id="unidade-error" class="error-message hidden" role="alert"></span>
                 </div>
-
-                <!-- 3. Seleção de Ambiente -->
                 <div class="form-group">
-                    <label for="local-select" class="block text-sm font-bold text-teal-700 mb-2">
-                        Ambiente Selecionado <span class="text-red-500" aria-label="obrigatório">*</span>
-                    </label>
-                    <select 
-                        id="local-select" 
-                        name="local"
-                        required 
-                        disabled
-                        aria-required="true"
-                        aria-describedby="local-error"
-                        class="input-field cursor-not-allowed disabled:opacity-60">
+                    <label for="local-select" class="rotulo">Ambiente <span class="obrigatorio" aria-hidden="true">*</span></label>
+                    <select id="local-select" name="local" required disabled aria-required="true"
+                            aria-describedby="local-error" class="input-field">
                         <option value="">Selecione primeiro a unidade...</option>
                     </select>
-                    <span id="local-error" class="error-message hidden text-red-500 text-sm mt-1" role="alert"></span>
+                    <span id="local-error" class="error-message hidden" role="alert"></span>
                 </div>
+            </section>
 
-                <!-- 4. Checklist de tarefas -->
-                <div id="container-tarefas" class="hidden space-y-3">
-                    <h3 class="text-sm font-bold text-teal-700 uppercase tracking-wide">Tarefas do Ambiente</h3>
-                    <div id="lista-tarefas" class="space-y-2" role="group" aria-label="Lista de tarefas a realizar"></div>
-                    <p class="text-xs text-gray-500 text-center mt-2" aria-live="polite" id="tarefas-contador"></p>
+            <!-- Etapa 3 -->
+            <section id="container-tarefas" class="etapa hidden" aria-labelledby="etapa-3">
+                <div class="etapa-cabecalho">
+                    <h2 id="etapa-3" class="etapa-titulo"><span class="etapa-num">3</span> Tarefas realizadas</h2>
+                    <button type="button" id="btn-marcar-todas" class="link-acao">Marcar todas</button>
                 </div>
+                <div class="progresso-linha">
+                    <div class="progresso" aria-hidden="true"><div id="progresso-barra" class="progresso-barra"></div></div>
+                    <span id="tarefas-contador" class="progresso-texto" aria-live="polite"></span>
+                </div>
+                <div id="lista-tarefas" class="lista-tarefas" role="group" aria-labelledby="etapa-3"></div>
+            </section>
 
-                <!-- 5. Observações -->
+            <!-- Etapa 4 -->
+            <section class="etapa" aria-labelledby="etapa-4">
+                <h2 id="etapa-4" class="etapa-titulo"><span class="etapa-num">4</span> Observações <span class="opcional">(opcional)</span></h2>
                 <div class="form-group">
-                    <label for="observacoes" class="block text-sm font-bold text-teal-700 mb-2">
-                        Observações <span class="text-gray-400 text-xs">(opcional)</span>
-                    </label>
-                    <textarea 
-                        id="observacoes" 
-                        name="observacoes"
-                        rows="2"
-                        maxlength="500"
-                        aria-describedby="observacoes-counter"
-                        class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition resize-none"
-                        placeholder="Ex: Piso molhado, lixo transbordando..."
-                    ></textarea>
-                    <p id="observacoes-counter" class="text-xs text-gray-400 text-right mt-1"><span id="obs-chars">0</span>/500</p>
+                    <label for="observacoes" class="sr-only">Observações</label>
+                    <textarea id="observacoes" name="observacoes" rows="2" maxlength="500"
+                              aria-describedby="observacoes-counter" class="input-field resize-none"
+                              placeholder="Ex: Piso molhado, lixo transbordando, lâmpada queimada..."></textarea>
+                    <p id="observacoes-counter" class="contador-caracteres"><span id="obs-chars">0</span>/500</p>
                 </div>
+            </section>
 
-                <!-- 6. Botão de Envio -->
-                <button 
-                    type="submit" 
-                    id="btn-enviar" 
-                    disabled
-                    class="btn-enviar w-full bg-gray-300 text-white font-bold py-4 rounded-xl shadow-lg transition-all cursor-not-allowed disabled:opacity-50 disabled:cursor-not-allowed"
-                    aria-label="Enviar formulário para planilha"
-                >
-                    ENVIAR PARA PLANILHA
+            <!-- Envio (fica fixo no rodapé da tela no celular) -->
+            <div class="barra-envio">
+                <button type="submit" id="btn-enviar" disabled class="btn-enviar">
+                    <span>ENVIAR PARA PLANILHA</span>
+                    <span id="btn-enviar-resumo" class="btn-enviar-resumo"></span>
                 </button>
-            </form>
-        </div>
-    </div>
+            </div>
+        </form>
 
-    <!-- Modal de Carregamento -->
-    <div id="loading" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50" role="status" aria-label="Processando requisição" aria-hidden="true">
-        <div class="bg-white text-teal-600 p-8 rounded-lg shadow-2xl text-center">
-            <svg class="animate-spin h-10 w-10 mx-auto mb-4 text-teal-500" viewBox="0 0 24 24" role="presentation">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <footer class="rodape">
+            <p>© 2026 Neuropsicocentro · Sistema de Controle de Limpeza <span id="versao-app"></span></p>
+        </footer>
+    </main>
+
+    <!-- Carregando -->
+    <div id="loading" class="modal hidden" role="status" aria-live="assertive">
+        <div class="modal-caixa">
+            <svg class="animate-spin h-10 w-10 mx-auto mb-4 modal-spinner" viewBox="0 0 24 24" aria-hidden="true">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            <p class="font-semibold">Enviando dados...</p>
-            <p class="text-sm text-gray-500 mt-2">Por favor, aguarde</p>
+            <p class="modal-titulo">Enviando dados...</p>
+            <p class="modal-texto">Por favor, aguarde</p>
         </div>
     </div>
 
-    <!-- Modal de Sucesso -->
-    <div id="success-modal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50" role="dialog" aria-labelledby="success-title" aria-modal="true">
-        <div class="bg-white text-center p-8 rounded-lg shadow-2xl max-w-sm mx-4">
-            <div class="text-green-500 text-5xl mb-4">✓</div>
-            <h2 id="success-title" class="text-xl font-bold text-gray-800 mb-2">Sucesso!</h2>
-            <p class="text-gray-600 mb-6">Registro enviado para a planilha com sucesso.</p>
-            <button id="btn-close-success" class="bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-6 rounded-lg transition">OK</button>
+    <!-- Sucesso / registro salvo -->
+    <div id="success-modal" class="modal hidden" role="dialog" aria-labelledby="success-title" aria-describedby="success-message" aria-modal="true">
+        <div class="modal-caixa">
+            <div id="success-icon" class="modal-icone icone-sucesso" aria-hidden="true">✓</div>
+            <h2 id="success-title" class="modal-titulo">Sucesso!</h2>
+            <p id="success-message" class="modal-texto">Registro enviado para a planilha.</p>
+            <button type="button" id="btn-close-success" class="btn-modal btn-modal-primario">OK</button>
         </div>
     </div>
 
-    <!-- Modal de Erro -->
-    <div id="error-modal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50" role="dialog" aria-labelledby="error-title" aria-modal="true">
-        <div class="bg-white text-center p-8 rounded-lg shadow-2xl max-w-sm mx-4">
-            <div class="text-red-500 text-5xl mb-4">⚠</div>
-            <h2 id="error-title" class="text-xl font-bold text-gray-800 mb-2">Erro na Transmissão</h2>
-            <p class="text-gray-600 mb-6" id="error-message">Verifique sua conexão com a internet e tente novamente.</p>
-            <button id="btn-close-error" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-6 rounded-lg transition">OK</button>
+    <!-- Erro -->
+    <div id="error-modal" class="modal hidden" role="alertdialog" aria-labelledby="error-title" aria-describedby="error-message" aria-modal="true">
+        <div class="modal-caixa">
+            <div class="modal-icone icone-erro" aria-hidden="true">⚠</div>
+            <h2 id="error-title" class="modal-titulo">Não foi possível enviar</h2>
+            <p class="modal-texto" id="error-message"></p>
+            <button type="button" id="btn-close-error" class="btn-modal btn-modal-perigo">OK</button>
         </div>
     </div>
 
-    <!-- Rodapé -->
-    <footer class="mt-8 text-center text-xs text-gray-400 pb-4">
-        <p>© 2026 Neuropsicocentro - Sistema de Controle de Limpeza</p>
-    </footer>
+    <!-- Confirmação (nenhuma tarefa marcada) -->
+    <div id="confirm-modal" class="modal hidden" role="alertdialog" aria-labelledby="confirm-title" aria-describedby="confirm-message" aria-modal="true">
+        <div class="modal-caixa">
+            <div class="modal-icone icone-alerta" aria-hidden="true">?</div>
+            <h2 id="confirm-title" class="modal-titulo">Nenhuma tarefa marcada</h2>
+            <p id="confirm-message" class="modal-texto">Deseja enviar o registro mesmo assim? Todas as tarefas ficarão como pendentes.</p>
+            <div class="modal-acoes">
+                <button type="button" id="btn-confirm-nao" class="btn-modal btn-modal-secundario">Voltar</button>
+                <button type="button" id="btn-confirm-sim" class="btn-modal btn-modal-primario">Enviar</button>
+            </div>
+        </div>
+    </div>
 
+    <script src="config.js"></script>
+    <script src="js/nucleo.js"></script>
+    <script src="js/envio.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

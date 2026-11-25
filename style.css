@@ -1,100 +1,458 @@
 /* ============================================
-   ESTILOS GLOBAIS E ACESSIBILIDADE
+   TEMA
+   O tema é definido em <html data-theme="light|dark"> (ver index.html e script.js).
+   Todas as cores vêm destas variáveis.
    ============================================ */
+:root,
+:root[data-theme='light'] {
+    color-scheme: light;
+    --marca: #0d9488;
+    --marca-forte: #0f766e;
+    --marca-suave: #ccfbf1;
+    --marca-fundo: #f0fdfa;
 
-:root {
-    --teal-50: #f0fdfa;
-    --teal-100: #ccfbf1;
-    --teal-400: #2dd4bf;
-    --teal-500: #14b8a6;
-    --teal-600: #0d9488;
-    --teal-700: #0f766e;
-    --gray-200: #e5e7eb;
-    --gray-300: #d1d5db;
-    --gray-400: #9ca3af;
-    --gray-500: #6b7280;
-    --red-500: #ef4444;
+    --fundo: linear-gradient(160deg, #f0fdfa 0%, #ecfeff 100%);
+    --superficie: #ffffff;
+    --superficie-2: #f8fafc;
+    --borda: #e2e8f0;
+    --borda-forte: #cbd5e1;
+    --texto: #1e293b;
+    --texto-suave: #64748b;
+    --rotulo: #0f766e;
+
+    --campo-fundo: #ffffff;
+    --card-marcado-fundo: #f0fdfa;
+    --card-marcado-borda: #14b8a6;
+    --sombra: 0 10px 30px -12px rgba(15, 118, 110, 0.25);
+
+    --erro: #dc2626;
+    --alerta-fundo: #fef3c7;
+    --alerta-texto: #92400e;
+    --sucesso: #16a34a;
 }
 
-/* Estilos dos campos de entrada */
+:root[data-theme='dark'] {
+    color-scheme: dark;
+    --marca: #14b8a6;
+    --marca-forte: #2dd4bf;
+    --marca-suave: #134e4a;
+    --marca-fundo: #0f2f2d;
+
+    --fundo: linear-gradient(160deg, #0b1220 0%, #111827 100%);
+    --superficie: #1e293b;
+    --superficie-2: #0f172a;
+    --borda: #334155;
+    --borda-forte: #475569;
+    --texto: #e2e8f0;
+    --texto-suave: #94a3b8;
+    --rotulo: #5eead4;
+
+    --campo-fundo: #0f172a;
+    --card-marcado-fundo: #123b39;
+    --card-marcado-borda: #14b8a6;
+    --sombra: 0 10px 30px -12px rgba(0, 0, 0, 0.6);
+
+    --erro: #f87171;
+    --alerta-fundo: #451a03;
+    --alerta-texto: #fde68a;
+    --sucesso: #4ade80;
+}
+
+/* ============================================
+   BASE E LAYOUT
+   ============================================ */
+html {
+    background: var(--superficie-2);
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    padding: 1rem;
+    background: var(--fundo);
+    color: var(--texto);
+    font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.pagina {
+    max-width: 32rem;
+    margin: 0 auto;
+}
+
+.aviso-noscript {
+    max-width: 32rem;
+    margin: 0 auto 1rem;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+/* ============================================
+   CABEÇALHO
+   ============================================ */
+.cabecalho {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 0.75rem 1rem;
+    padding: 1.25rem 1.25rem 1rem;
+    border-radius: 1rem 1rem 0 0;
+    background: linear-gradient(120deg, #14b8a6, #0d9488);
+    color: #fff;
+    box-shadow: var(--sombra);
+}
+
+.cabecalho-logo {
+    opacity: 0.85;
+    display: flex;
+}
+
+.cabecalho-texto h1 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+}
+
+.cabecalho-texto p {
+    margin: 0.125rem 0 0;
+    font-size: 0.875rem;
+    color: #ccfbf1;
+}
+
+.seletor-tema {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-self: start;
+    padding: 3px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.18);
+}
+
+.seletor-tema button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.3rem 0.75rem;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    min-height: 32px;
+}
+
+.seletor-tema button[aria-checked='true'] {
+    background: #fff;
+    color: #0f766e;
+}
+
+/* ============================================
+   CARTÃO DO FORMULÁRIO E ETAPAS
+   ============================================ */
+.cartao {
+    background: var(--superficie);
+    border: 1px solid var(--borda);
+    border-top: 0;
+    border-radius: 0 0 1rem 1rem;
+    box-shadow: var(--sombra);
+}
+
+.etapa {
+    padding: 1.25rem 1.25rem 1.25rem;
+    border-bottom: 1px solid var(--borda);
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+}
+
+.etapa.hidden {
+    display: none;
+}
+
+.etapa-cabecalho {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.etapa-titulo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--texto);
+}
+
+.etapa-num {
+    display: inline-grid;
+    place-items: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 999px;
+    background: var(--marca);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+.opcional {
+    font-weight: 400;
+    font-size: 0.75rem;
+    color: var(--texto-suave);
+}
+
+/* ============================================
+   CAMPOS
+   ============================================ */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+}
+
+.rotulo {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--rotulo);
+}
+
+.obrigatorio {
+    color: var(--erro);
+}
+
 .input-field {
     width: 100%;
     padding: 0.75rem 1rem;
-    border: 2px solid var(--gray-300);
-    border-radius: 0.5rem;
+    border: 2px solid var(--borda-forte);
+    border-radius: 0.625rem;
+    background-color: var(--campo-fundo);
+    color: var(--texto);
     outline: none;
-    transition: all 0.2s ease-in-out;
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .input-field:focus {
-    border-color: var(--teal-500);
-    box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.2);
+    border-color: var(--marca);
+    box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.25);
 }
 
 .input-field:disabled {
-    opacity: 0.6;
-    cursor: not-allowed !important;
+    opacity: 0.55;
+    cursor: not-allowed;
 }
 
-.input-field:not(:disabled) {
-    cursor: pointer !important;
+select.input-field:not(:disabled) {
+    cursor: pointer;
+}
+
+select.input-field optgroup {
+    font-weight: 700;
+    color: var(--rotulo);
+}
+
+select.input-field option {
+    color: var(--texto);
+    font-weight: 400;
 }
 
 .input-field::placeholder {
-    color: var(--gray-400);
+    color: var(--texto-suave);
+    opacity: 0.8;
 }
 
-/* Estilos de grupos de formulário */
-.form-group {
+.campo-invalido,
+.campo-invalido:focus {
+    border-color: var(--erro);
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2);
+}
+
+.error-message {
+    color: var(--erro);
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.contador-caracteres {
+    margin: 0;
+    text-align: right;
+    font-size: 0.75rem;
+    color: var(--texto-suave);
+}
+
+/* ============================================
+   CHECKLIST
+   ============================================ */
+.lista-tarefas {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
 }
 
-.error-message {
-    color: var(--red-500);
-    font-size: 0.875rem;
-    display: block;
-}
-
-.error-message.hidden {
-    display: none;
-}
-
-/* Estilos de cards de tarefas */
-.card-checked {
-    background-color: var(--teal-50);
-    border-color: var(--teal-400);
-}
-
-/* Customizações para checkboxes */
-input[type="checkbox"] {
+/* O cartão inteiro é o <label>: tocar em qualquer parte marca a tarefa. */
+.tarefa-card {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 52px;
+    padding: 0.75rem 0.875rem;
+    border: 2px solid var(--borda);
+    border-radius: 0.75rem;
+    background-color: var(--superficie);
+    color: var(--texto);
+    font-size: 0.9rem;
     cursor: pointer;
-    accent-color: var(--teal-500);
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: background-color 0.15s, border-color 0.15s, transform 0.1s;
 }
 
-input[type="checkbox"]:focus-visible {
-    outline: 2px solid var(--teal-500);
+.tarefa-card:hover {
+    border-color: var(--borda-forte);
+}
+
+.tarefa-card:active {
+    transform: scale(0.99);
+}
+
+.tarefa-card .tarefa-num {
+    flex-shrink: 0;
+    width: 1.375rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--texto-suave);
+    text-align: right;
+}
+
+.tarefa-card .tarefa-texto {
+    flex: 1;
+    line-height: 1.3;
+}
+
+.tarefa-card.card-checked {
+    background-color: var(--card-marcado-fundo);
+    border-color: var(--card-marcado-borda);
+}
+
+.tarefa-card.card-checked .tarefa-texto {
+    color: var(--texto-suave);
+    text-decoration: line-through;
+    text-decoration-color: var(--marca);
+}
+
+.tarefa-card:focus-within {
+    outline: 3px solid var(--marca);
     outline-offset: 2px;
 }
 
-/* Customizações para selects */
-select {
+input[type='checkbox'] {
+    width: 1.375rem;
+    height: 1.375rem;
+    flex-shrink: 0;
     cursor: pointer;
+    accent-color: var(--marca);
 }
 
-select:focus {
-    outline: none;
+button:focus-visible {
+    outline: 3px solid var(--marca);
+    outline-offset: 2px;
 }
 
-/* Botão customizado */
+.link-acao {
+    padding: 0.375rem 0.625rem;
+    border: 1px solid var(--marca);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--marca-forte);
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.progresso-linha {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.progresso {
+    flex: 1;
+    height: 8px;
+    border-radius: 999px;
+    background-color: var(--borda);
+    overflow: hidden;
+}
+
+.progresso-barra {
+    height: 100%;
+    width: 0;
+    border-radius: 999px;
+    background-color: var(--marca);
+    transition: width 0.25s ease, background-color 0.25s;
+}
+
+.progresso-barra.completo {
+    background-color: var(--sucesso);
+}
+
+.progresso-texto {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--texto-suave);
+    white-space: nowrap;
+}
+
+/* ============================================
+   BARRA DE ENVIO (fixa no rodapé enquanto rola)
+   ============================================ */
+.barra-envio {
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+    padding: 1rem 1.25rem;
+    border-radius: 0 0 1rem 1rem;
+    background: var(--superficie);
+    box-shadow: 0 -8px 16px -12px rgba(0, 0, 0, 0.3);
+}
+
 .btn-enviar {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.125rem;
+    padding: 0.875rem 1rem;
+    border: 0;
+    border-radius: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    color: #fff;
+    background-color: var(--marca);
+    cursor: pointer;
     transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
+.btn-enviar-resumo {
+    font-size: 0.7rem;
+    font-weight: 600;
+    opacity: 0.9;
+}
+
+.btn-enviar-resumo:empty {
+    display: none;
+}
+
 .btn-enviar:not(:disabled):hover {
-    background-color: var(--teal-700);
-    transform: scale(1.02);
+    background-color: #0f766e;
 }
 
 .btn-enviar:not(:disabled):active {
@@ -102,81 +460,168 @@ select:focus {
 }
 
 .btn-enviar:disabled {
-    opacity: 0.5;
+    background-color: var(--borda-forte);
+    color: var(--superficie);
     cursor: not-allowed;
 }
 
 /* ============================================
-   ACESSIBILIDADE MOBILE
+   AVISOS E RODAPÉ
    ============================================ */
+.banner-fila {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    background-color: var(--alerta-fundo);
+    color: var(--alerta-texto);
+}
 
-@media screen and (max-width: 768px) {
-    /* Evita zoom automático indesejado no iOS/Safari */
-    input,
-    select,
-    textarea {
-        font-size: 16px !important;
-    }
+.banner-fila.hidden {
+    display: none;
+}
 
-    /* Touch targets adequados para uso em smartphones */
-    .input-field,
-    button {
-        min-height: 48px;
-    }
+.banner-fila-botao {
+    flex-shrink: 0;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.375rem;
+    border: 1px solid currentColor;
+    background: transparent;
+    color: inherit;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+}
 
-    input[type="checkbox"] {
-        width: 1.5rem;
-        height: 1.5rem;
-    }
-
-    .form-group {
-        margin-bottom: 1rem;
-    }
+.rodape {
+    margin-top: 1.5rem;
+    padding-bottom: 1rem;
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--texto-suave);
 }
 
 /* ============================================
-   MODO ESCURO (PREFERÊNCIA DO SISTEMA)
+   MODAIS
    ============================================ */
+.modal {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background-color: rgba(0, 0, 0, 0.55);
+}
 
-@media (prefers-color-scheme: dark) {
-    body {
-        background: linear-gradient(to bottom right, #0f172a, #1e293b);
-        color: #e2e8f0;
-    }
+.modal.hidden {
+    display: none;
+}
 
-    .bg-white {
-        background-color: #1e293b !important;
-        border-color: #334155 !important;
-    }
+.modal-caixa {
+    width: 100%;
+    max-width: 24rem;
+    padding: 2rem 1.5rem 1.5rem;
+    border-radius: 1rem;
+    text-align: center;
+    background-color: var(--superficie);
+    color: var(--texto);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+}
 
-    .input-field {
-        background-color: #0f172a;
-        color: #f8fafc;
-        border-color: #475569;
-    }
+.modal-spinner {
+    color: var(--marca);
+}
 
-    .input-field:focus {
-        border-color: var(--teal-500);
-        box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.3);
-    }
+.modal-icone {
+    font-size: 2.75rem;
+    line-height: 1;
+    margin-bottom: 0.75rem;
+}
 
-    .text-gray-700, .text-gray-800 {
-        color: #cbd5e1 !important;
-    }
+.icone-sucesso {
+    color: var(--sucesso);
+}
 
-    .text-gray-600 {
-        color: #94a3b8 !important;
-    }
+.icone-erro {
+    color: var(--erro);
+}
+
+.icone-alerta {
+    color: #f59e0b;
+}
+
+.modal-titulo {
+    margin: 0 0 0.5rem;
+    font-size: 1.2rem;
+    font-weight: 800;
+}
+
+.modal-texto {
+    margin: 0 0 1.5rem;
+    color: var(--texto-suave);
+}
+
+.modal-acoes {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+}
+
+.btn-modal {
+    min-width: 7rem;
+    padding: 0.7rem 1.5rem;
+    border: 0;
+    border-radius: 0.625rem;
+    font-weight: 700;
+    color: #fff;
+    cursor: pointer;
+    transition: filter 0.2s;
+}
+
+.btn-modal:hover {
+    filter: brightness(0.95);
+}
+
+.btn-modal-primario {
+    background-color: var(--marca);
+}
+
+.btn-modal-perigo {
+    background-color: #dc2626;
+}
+
+.btn-modal-secundario {
+    background-color: transparent;
+    color: var(--texto);
+    border: 2px solid var(--borda-forte);
 }
 
 /* ============================================
-   ANIMAÇÕES E TRANSIÇÕES
+   ANIMAÇÕES
    ============================================ */
+@keyframes successBounce {
+    0%,
+    100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.15);
+    }
+}
 
-@keyframes slideDown {
+#success-modal:not(.hidden) #success-icon {
+    animation: successBounce 0.5s ease-out;
+}
+
+@keyframes aparecer {
     from {
         opacity: 0;
-        transform: translateY(-8px);
+        transform: translateY(-6px);
     }
     to {
         opacity: 1;
@@ -185,47 +630,70 @@ select:focus {
 }
 
 #container-tarefas:not(.hidden) {
-    animation: slideDown 0.3s ease-out;
+    animation: aparecer 0.25s ease-out;
 }
 
-/* Animação do modal de sucesso */
-@keyframes successBounce {
-    0%, 100% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.15);
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation: none !important;
+        transition: none !important;
     }
 }
 
-#success-modal:not(.hidden) .text-green-500 {
-    animation: successBounce 0.5s ease-out;
+/* ============================================
+   CELULAR
+   ============================================ */
+@media screen and (max-width: 640px) {
+    body {
+        padding: 0.5rem;
+    }
+
+    /* Evita zoom automático no iOS */
+    input,
+    select,
+    textarea {
+        font-size: 16px !important;
+    }
+
+    .input-field,
+    .btn-modal {
+        min-height: 48px;
+    }
+
+    .etapa,
+    .barra-envio {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .barra-envio {
+        padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
+    }
 }
 
 /* ============================================
    IMPRESSÃO
    ============================================ */
-
 @media print {
     body {
-        background: white;
+        background: #fff;
+        color: #000;
     }
 
-    .fixed,
+    .modal,
+    .banner-fila,
+    .seletor-tema,
+    .barra-envio,
     button {
         display: none !important;
-    }
-
-    form {
-        box-shadow: none;
-        border: 1px solid #000;
     }
 }
 
 /* ============================================
-   UTILITÁRIOS DE ACESSIBILIDADE
+   ACESSIBILIDADE
    ============================================ */
-
 .sr-only {
     position: absolute;
     width: 1px;
